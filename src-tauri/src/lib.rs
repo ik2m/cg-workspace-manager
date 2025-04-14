@@ -6,10 +6,13 @@ use walkdir::WalkDir;
 use serde::Serialize;
 
 #[derive(Serialize)]
-struct FileNode {
-    name: String,
-    path: String,
-    children: Option<Vec<FileNode>>,
+#[serde(tag = "type")]
+enum FileNode {
+    #[serde(rename = "dir")]
+    Dir { name: String, path: String, children: Vec<FileNode> },
+
+    #[serde(rename = "file")]
+    File { name: String, path: String },
 }
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -29,58 +32,63 @@ fn list_files_in_dir(dir: String) -> Result<FileNode, String> {
 }
 
 fn build_file_tree(root_path: &Path) -> FileNode {
-    let mut root = FileNode {
-        name: root_path
-            .file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_else(|| root_path.display().to_string()),
-        path: root_path.display().to_string(),
-        children: Some(Vec::new()),
-    };
-
+    // 中間ノード用: path -> 子ノードたち
     let mut nodes: HashMap<PathBuf, Vec<FileNode>> = HashMap::new();
-    nodes.insert(root_path.to_path_buf(), Vec::new());
 
+    // すべてのエントリを収集
     for entry in WalkDir::new(root_path)
         .into_iter()
         .filter_map(Result::ok)
-        .filter(|e| e.path() != root_path)
     {
         let path = entry.path().to_path_buf();
         let parent_path = path.parent().unwrap_or(root_path).to_path_buf();
+        let file_name = path.file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_else(|| path.display().to_string());
 
-        let node = FileNode {
-            name: path
-                .file_name()
-                .map(|n| n.to_string_lossy().to_string())
-                .unwrap_or_else(|| path.display().to_string()),
-            path: path.display().to_string(),
-            children: if path.is_dir() { Some(Vec::new()) } else { None },
+        let node = if path.is_dir() {
+            // 空ディレクトリも `children: []` で作る
+            FileNode::Dir {
+                name: file_name,
+                path: path.display().to_string(),
+                children: Vec::new(),
+            }
+        } else {
+            FileNode::File {
+                name: file_name,
+                path: path.display().to_string(),
+            }
         };
 
-        nodes.entry(parent_path.clone()).or_default().push(node);
+        nodes.entry(parent_path).or_default().push(node);
 
+        // ディレクトリ自身もキーにしておく（空であっても）
         if path.is_dir() {
             nodes.entry(path).or_default();
         }
     }
 
-    fn attach_children(node: &mut FileNode, nodes: &mut HashMap<PathBuf, Vec<FileNode>>) {
-        if let Some(children) = nodes.remove(&PathBuf::from(&node.path)) {
-            node.children = Some(
-                children
-                    .into_iter()
-                    .map(|mut child| {
-                        attach_children(&mut child, nodes);
-                        child
-                    })
-                    .collect(),
-            );
+    fn attach_children(path: &PathBuf, nodes: &mut HashMap<PathBuf, Vec<FileNode>>) -> FileNode {
+        let name = path.file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_else(|| path.display().to_string());
+
+        let children = nodes.remove(path).unwrap_or_default()
+            .into_iter()
+            .map(|mut node| match &mut node {
+                FileNode::Dir { path, .. } => attach_children(&PathBuf::from(path.clone()), nodes),
+                _ => node,
+            })
+            .collect::<Vec<_>>();
+
+        FileNode::Dir {
+            name,
+            path: path.display().to_string(),
+            children,
         }
     }
 
-    attach_children(&mut root, &mut nodes);
-    root
+    attach_children(&root_path.to_path_buf(), &mut nodes)
 }
 
 

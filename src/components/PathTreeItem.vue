@@ -18,14 +18,17 @@ const toggleChildren = () => {
 <template>
   <div>
     <span @click="toggleChildren" class="text-md">
-    <MaterialIcon :name="showChildren ? 'keyboard_arrow_down': 'keyboard_arrow_right'" />
+    <MaterialIcon v-if="pathTree.type === 'dir'" :name="showChildren ? 'keyboard_arrow_down': 'keyboard_arrow_right'" />
     {{ pathTree.name }}
     </span>
-    <div v-if=" pathTree.children && showChildren" class="pl-2">
-      <PathTreeItem
-          v-for="child in pathTree.children"
-          :path-tree="child"
-      />
+    <div v-if="pathTree.type === 'dir' && showChildren" class="pl-2">
+      <template v-if="pathTree.children.length > 0">
+        <PathTreeItem
+            v-for="child in pathTree.children"
+            :path-tree="child"
+        />
+      </template>
+      <span v-else>データはありません</span>
     </div>
   </div>
 </template>
