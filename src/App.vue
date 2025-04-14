@@ -8,7 +8,7 @@ import PathTreeView from "./components/PathTreeView.vue";
 
 const SETTING_KEY_WORKSPACE_DIR = "workspace-dir";
 
-const pathTree = ref<PathTree>({});
+const pathTree = ref<PathTree|null>(null);
 const workspaceDir = ref<string>("");
 const errMsg = ref<string>("");
 
@@ -64,7 +64,7 @@ onMounted(() => {
     <p>選択したフォルダ: {{ workspaceDir }}</p>
 
     <button @click="getFiles">このディレクトリのファイルを出力する</button>
-    <PathTreeView :path-tree="pathTree" />
+    <PathTreeView v-if="pathTree" :path-tree="pathTree as PathTree" />
     {{ errMsg }}
   </main>
 </template>
