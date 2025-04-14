@@ -6,7 +6,15 @@ import { load } from '@tauri-apps/plugin-store';
 
 const SETTING_KEY_WORKSPACE_DIR = "workspace-dir";
 
-const pathTree = ref<[]>([]);
+type PathTree = {
+  [key: string]: {
+    name: string;
+    path: string;
+    children?: PathTree;
+  }
+};
+
+const pathTree = ref<PathTree>({});
 const workspaceDir = ref<string>("");
 const errMsg = ref<string>("");
 
@@ -41,7 +49,7 @@ async function getWorkspaceDir() {
 function getFiles() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
   invoke("list_files_in_dir", { dir: workspaceDir.value })
-      .then((res:[]) => {
+      .then((res:PathTree) => {
         pathTree.value = res;
       })
       .catch((err) => {
