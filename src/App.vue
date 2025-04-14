@@ -57,15 +57,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="container">
-    <h1>CG Workspace Manager</h1>
-
-    <button @click="openFolderDialog" class="btn">フォルダを選択</button>
-    <button @click="storeWorkspaceDir" class="btn">決定</button>
-    <p>選択したフォルダ: {{ workspaceDir }}</p>
-
-    <button @click="getFiles" class="btn">このディレクトリのファイルを出力する</button>
-    <PathTreeItem v-if="pathTree" :path-tree="pathTree as PathTree" />
+  <main class="flex flex-col h-screen">
+    <div>
+      <h1>CG Workspace Manager</h1>
+      <button @click="openFolderDialog" class="btn">フォルダを選択</button>
+      <button @click="storeWorkspaceDir" class="btn">決定</button>
+      <p>選択したフォルダ: {{ workspaceDir }}</p>
+      <button @click="getFiles" class="btn">このディレクトリのファイルを出力する</button>
+    </div>
+    <div class="bg-base-200 flex-grow-1 overflow-auto">
+      <PathTreeItem v-if="pathTree" :path-tree="pathTree" />
+    </div>
     {{ errMsg }}
   </main>
 </template>
