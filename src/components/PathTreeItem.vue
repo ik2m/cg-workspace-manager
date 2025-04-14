@@ -17,10 +17,10 @@ const toggleChildren = () => {
 
 <template>
   <div>
-    <span @click="toggleChildren" class="text-md">
+    <button @click="toggleChildren" class="text-md cursor-pointer">
     <MaterialIcon v-if="pathTree.type === 'dir'" :name="showChildren ? 'keyboard_arrow_down': 'keyboard_arrow_right'" />
     {{ pathTree.name }}
-    </span>
+    </button>
     <div v-if="pathTree.type === 'dir' && showChildren" class="pl-2">
       <template v-if="pathTree.children.length > 0">
         <PathTreeItem
