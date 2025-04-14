@@ -17,7 +17,7 @@ const toggleChildren = () => {
 
 <template>
   <div>
-    <button @click="toggleChildren" class="text-md cursor-pointer">
+    <button @click="toggleChildren" class="text-md cursor-pointer inline-flex items-center">
     <MaterialIcon v-if="pathTree.type === 'dir'" :name="showChildren ? 'keyboard_arrow_down': 'keyboard_arrow_right'" />
     {{ pathTree.name }}
     </button>
