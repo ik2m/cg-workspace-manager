@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::PathBuf;
+use walkdir::WalkDir;
 use tauri::command;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -15,17 +16,12 @@ fn list_files_in_dir(dir: String) -> Result<Vec<String>, String> {
         return Err("指定されたパスはディレクトリではありません".into());
     }
 
-    let entries = fs::read_dir(path).map_err(|e| format!("ディレクトリ読み込み失敗: {}", e))?;
-
-    let mut files = Vec::new();
-
-    for entry in entries {
-        let entry = entry.map_err(|e| format!("エントリ読み込み失敗: {}", e))?;
-        let file_type = entry
-            .file_type()
-            .map_err(|e| format!("ファイルタイプ取得失敗: {}", e))?;
-        files.push(entry.file_name().to_string_lossy().to_string());
-    }
+    let files = WalkDir::new(&path)
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.file_type().is_file())
+        .map(|entry| entry.path().display().to_string())
+        .collect();
 
     Ok(files)
 }
