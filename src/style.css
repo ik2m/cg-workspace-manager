@@ -1,5 +1,2 @@
-@import "tailwindcss"; /**prefix(tw);**/
-@plugin "daisyui" {
-    themes: light --default, dark --prefersdark;
-    prefix: "d-";
-}
+@import "tailwindcss";
+@plugin "daisyui"

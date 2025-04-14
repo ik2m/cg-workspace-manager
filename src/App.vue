@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { load } from '@tauri-apps/plugin-store';
 import type { PathTree } from "./types";
-import PathTreeView from "./components/PathTreeView.vue";
+import PathTreeItem from "./components/PathTreeItem.vue";
 
 const SETTING_KEY_WORKSPACE_DIR = "workspace-dir";
 
@@ -58,14 +58,14 @@ onMounted(() => {
 
 <template>
   <main class="container">
-    <h1>hoge</h1>
+    <h1>CG Workspace Manager</h1>
 
-    <button @click="openFolderDialog" class="d-btn">フォルダを選択</button>
-    <button @click="storeWorkspaceDir" class="d-btn">決定</button>
+    <button @click="openFolderDialog" class="btn">フォルダを選択</button>
+    <button @click="storeWorkspaceDir" class="btn">決定</button>
     <p>選択したフォルダ: {{ workspaceDir }}</p>
 
-    <button @click="getFiles" class="d-btn">このディレクトリのファイルを出力する</button>
-    <PathTreeView v-if="pathTree" :path-tree="pathTree as PathTree" />
+    <button @click="getFiles" class="btn">このディレクトリのファイルを出力する</button>
+    <PathTreeItem v-if="pathTree" :path-tree="pathTree as PathTree" />
     {{ errMsg }}
   </main>
 </template>
