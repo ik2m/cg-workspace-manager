@@ -8,7 +8,7 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-#[command]
+#[tauri::command]
 fn list_files_in_dir(dir: String) -> Result<Vec<String>, String> {
     let path = PathBuf::from(dir);
     if !path.is_dir() {
