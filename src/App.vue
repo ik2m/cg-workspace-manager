@@ -60,10 +60,11 @@ onMounted(() => {
   <main class="container">
     <h1>hoge</h1>
 
-    <button @click="openFolderDialog">フォルダを選択</button><button @click="storeWorkspaceDir">決定</button>
+    <button @click="openFolderDialog" class="d-btn">フォルダを選択</button>
+    <button @click="storeWorkspaceDir" class="d-btn">決定</button>
     <p>選択したフォルダ: {{ workspaceDir }}</p>
 
-    <button @click="getFiles">このディレクトリのファイルを出力する</button>
+    <button @click="getFiles" class="d-btn">このディレクトリのファイルを出力する</button>
     <PathTreeView v-if="pathTree" :path-tree="pathTree as PathTree" />
     {{ errMsg }}
   </main>

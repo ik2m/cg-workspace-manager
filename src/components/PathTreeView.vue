@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <div>
     {{ pathTree.name }}
-    <div v-if="pathTree.children" style="margin-left: 1rem">
+    <div v-if="pathTree.children" class="pl-2">
       <PathTreeView
           v-for="child in pathTree.children"
           :path-tree="child"
