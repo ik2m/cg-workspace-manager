@@ -3,16 +3,10 @@ import {onMounted, ref} from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { load } from '@tauri-apps/plugin-store';
+import type { PathTree } from "./types";
+import PathTreeView from "./components/PathTreeView.vue";
 
 const SETTING_KEY_WORKSPACE_DIR = "workspace-dir";
-
-type PathTree = {
-  [key: string]: {
-    name: string;
-    path: string;
-    children?: PathTree;
-  }
-};
 
 const pathTree = ref<PathTree>({});
 const workspaceDir = ref<string>("");
@@ -70,11 +64,10 @@ onMounted(() => {
     <p>選択したフォルダ: {{ workspaceDir }}</p>
 
     <button @click="getFiles">このディレクトリのファイルを出力する</button>
-    {{ pathTree }}
+    <PathTreeView :path-tree="pathTree" />
     {{ errMsg }}
   </main>
 </template>
-
 <style scoped>
 
 </style>
