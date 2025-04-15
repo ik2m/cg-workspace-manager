@@ -4,9 +4,12 @@ import { PathTree } from "../types";
 import PathTreeItem from "./PathTreeItem.vue";
 import MaterialIcon from "./MaterialIcon.vue";
 
-defineProps<{
+withDefaults(defineProps<{
   pathTree: PathTree;
-}>()
+  depth?: number;
+}>(),{
+  depth: 0
+})
 
 const showChildren = ref<boolean>(false);
 
@@ -16,21 +19,17 @@ const toggleChildren = () => {
 </script>
 
 <template>
-  <div>
-    <button @click="toggleChildren" class="text-md cursor-pointer inline-flex items-center">
+  <button @click="toggleChildren" class="btn btn-ghost text-md cursor-pointer flex items-center">
+    <span :style="{ 'width': `${depth * 8}px` }" />
     <MaterialIcon v-if="pathTree.type === 'dir'" :name="showChildren ? 'keyboard_arrow_down': 'keyboard_arrow_right'" />
     {{ pathTree.name }}
-    </button>
-    <div v-if="pathTree.type === 'dir' && showChildren" class="pl-2">
-      <template v-if="pathTree.children.length > 0">
-        <PathTreeItem
-            v-for="child in pathTree.children"
-            :path-tree="child"
-        />
-      </template>
-      <span v-else>データはありません</span>
-    </div>
-  </div>
+  </button>
+  <ul v-if="pathTree.type === 'dir' && showChildren">
+    <li v-for="child in pathTree.children" :key="child.path">
+      <PathTreeItem :path-tree="child" :depth="depth + 1" />
+    </li>
+    <li v-if="pathTree.children.length === 0">データはありません</li>
+  </ul>
 </template>
 
 <style scoped>
