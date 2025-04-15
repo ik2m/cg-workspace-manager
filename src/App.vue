@@ -42,8 +42,8 @@ async function getWorkspaceDir() {
 
 function getFiles() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  invoke("list_files_in_dir", { dir: workspaceDir.value })
-      .then((res:PathTree) => {
+  invoke<PathTree>("list_files_in_dir", { dir: workspaceDir.value })
+      .then((res) => {
         pathTree.value = res;
       })
       .catch((err) => {
@@ -66,7 +66,9 @@ onMounted(() => {
       <button @click="getFiles" class="btn">このディレクトリのファイルを出力する</button>
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
-      <PathTreeItem v-if="pathTree" :path-tree="pathTree" />
+      <ul v-if="pathTree" v-for="child in pathTree.children" :key="pathTree.path">
+        <PathTreeItem v-if="child" :path-tree="child"/>
+      </ul>
     </div>
     {{ errMsg }}
   </main>

@@ -2,7 +2,7 @@ type Dir = {
     type: 'dir';
     name: string;
     path: string;
-    children: PathTree[];
+    children: (Dir|File)[];
 }
 
 type File = {
@@ -11,7 +11,7 @@ type File = {
     path: string;
 }
 
-type PathTree = File | Dir;
+type PathTree = Dir;
 
 
-export type { PathTree };
+export type { PathTree, File, Dir };
