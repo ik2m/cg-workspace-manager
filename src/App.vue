@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import { onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from '@tauri-apps/plugin-dialog';
+import { open } from "@tauri-apps/plugin-dialog";
 import type { PathTree } from "./types";
 import { useAppSetting } from "./composables/useAppSetting.ts";
 import SelectedFileInfo from "./components/SelectedFileInfo.vue";
 import PathTreeSelector from "./components/PathTreeSelector.vue";
 
-const pathTree = ref<PathTree|null>(null);
-const editingWorkspaceDir = ref<string|null>(null);
+const pathTree = ref<PathTree | null>(null);
+const editingWorkspaceDir = ref<string | null>(null);
 const errMsg = ref<string>("");
 
 const { workspaceDir, updateWorkSpaceDir } = useAppSetting();
-
 
 async function openFolderDialog() {
   const selected = await open({
     directory: true,
     multiple: false,
-    title: 'フォルダを選択してください',
+    title: "フォルダを選択してください",
   });
 
   if (selected) {
@@ -33,12 +32,12 @@ function storeWorkspaceDir() {
 function getFiles() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
   invoke<PathTree>("list_files_in_dir", { dir: workspaceDir.value })
-      .then((res) => {
-        pathTree.value = res;
-      })
-      .catch((err) => {
-        errMsg.value = "Error: " + err;
-      })
+    .then((res) => {
+      pathTree.value = res;
+    })
+    .catch((err) => {
+      errMsg.value = "Error: " + err;
+    });
 }
 
 watch(
@@ -48,7 +47,7 @@ watch(
       getFiles();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(() => {
@@ -64,10 +63,8 @@ onMounted(() => {
       <p>選択したフォルダ: {{ editingWorkspaceDir }}</p>
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
-    <PathTreeSelector v-if="pathTree" :path-tree="pathTree" />
+      <PathTreeSelector v-if="pathTree" :path-tree="pathTree" />
     </div>
   </main>
 </template>
-<style scoped>
-
-</style>
+<style scoped></style>

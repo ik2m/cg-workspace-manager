@@ -1,21 +1,21 @@
 <script setup lang="ts">
 defineProps<{
-  name: string
-}>()
+  name: string;
+}>();
 </script>
 
 <template>
-    <span class="material-symbols-rounded">
-      {{ name }}
-    </span>
+  <span class="material-symbols-rounded">
+    {{ name }}
+  </span>
 </template>
 
 <style scoped>
 .material-symbols-rounded {
- font-variation-settings:
-     'FILL' 1,
-     'wght' 500,
-     'GRAD' 0,
-     'opsz' 24
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
 }
 </style>
