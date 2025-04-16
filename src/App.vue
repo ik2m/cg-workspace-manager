@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
-import { load } from '@tauri-apps/plugin-store';
 import type { PathTree } from "./types";
 import PathTreeItem from "./components/PathTreeItem.vue";
-
-const SETTING_KEY_WORKSPACE_DIR = "workspace-dir";
+import { useAppSetting } from "./composables/useAppSetting.ts";
 
 const pathTree = ref<PathTree|null>(null);
-const workspaceDir = ref<string>("");
+const editingWorkspaceDir = ref<string|null>(null);
 const errMsg = ref<string>("");
+
+const { workspaceDir, updateWorkSpaceDir } = useAppSetting();
 
 
 async function openFolderDialog() {
@@ -20,24 +20,13 @@ async function openFolderDialog() {
     title: 'フォルダを選択してください',
   });
 
-  if (typeof selected === 'string') {
-    workspaceDir.value = selected;
+  if (selected) {
+    editingWorkspaceDir.value = selected;
   }
 }
 
-async function storeWorkspaceDir() {
-  const store = await load('store.json', { autoSave: false });
-  // 値を保存
-  await store.set(SETTING_KEY_WORKSPACE_DIR, { value: workspaceDir.value });
-  await store.save();
-}
-
-async function getWorkspaceDir() {
-  // .settings.dat というストアファイルを作成
-  const store = await load('store.json', { autoSave: false });
-  // 値を取得
-  const {value} = await store.get<{ value: string }>(SETTING_KEY_WORKSPACE_DIR);
-  workspaceDir.value = value;
+function storeWorkspaceDir() {
+  updateWorkSpaceDir(editingWorkspaceDir.value ?? "");
 }
 
 function getFiles() {
@@ -51,8 +40,18 @@ function getFiles() {
       })
 }
 
+watch(
+  () => workspaceDir.value,
+  (newVal) => {
+    if (newVal) {
+      getFiles();
+    }
+  },
+  { immediate: true }
+);
+
 onMounted(() => {
-  getWorkspaceDir();
+  editingWorkspaceDir.value = workspaceDir.value;
 });
 </script>
 
@@ -62,8 +61,7 @@ onMounted(() => {
       <h1>CG Workspace Manager</h1>
       <button @click="openFolderDialog" class="btn">フォルダを選択</button>
       <button @click="storeWorkspaceDir" class="btn">決定</button>
-      <p>選択したフォルダ: {{ workspaceDir }}</p>
-      <button @click="getFiles" class="btn">このディレクトリのファイルを出力する</button>
+      <p>選択したフォルダ: {{ editingWorkspaceDir }}</p>
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
       <ul v-if="pathTree" v-for="child in pathTree.children" :key="pathTree.path">
