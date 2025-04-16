@@ -3,8 +3,9 @@ import {onMounted, ref, watch} from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import type { PathTree } from "./types";
-import PathTreeItem from "./components/PathTreeItem.vue";
 import { useAppSetting } from "./composables/useAppSetting.ts";
+import SelectedFileInfo from "./components/SelectedFileInfo.vue";
+import PathTreeSelector from "./components/PathTreeSelector.vue";
 
 const pathTree = ref<PathTree|null>(null);
 const editingWorkspaceDir = ref<string|null>(null);
@@ -58,17 +59,13 @@ onMounted(() => {
 <template>
   <main class="flex flex-col h-screen">
     <div>
-      <h1>CG Workspace Manager</h1>
       <button @click="openFolderDialog" class="btn">フォルダを選択</button>
       <button @click="storeWorkspaceDir" class="btn">決定</button>
       <p>選択したフォルダ: {{ editingWorkspaceDir }}</p>
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
-      <ul v-if="pathTree" v-for="child in pathTree.children" :key="pathTree.path">
-        <PathTreeItem v-if="child" :path-tree="child"/>
-      </ul>
+    <PathTreeSelector v-if="pathTree" :path-tree="pathTree" />
     </div>
-    {{ errMsg }}
   </main>
 </template>
 <style scoped>

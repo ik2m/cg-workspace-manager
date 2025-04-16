@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Dir, File } from "../types";
-import PathTreeItem from "./PathTreeItem.vue";
+import PathTreeItem from "./PathTreeSelectorItem.vue";
 import MaterialIcon from "./MaterialIcon.vue";
 
 withDefaults(defineProps<{
