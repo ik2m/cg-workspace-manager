@@ -18,10 +18,10 @@ const colorClass = computed(() => {
   return props.selectedPath === props.pathTree.path ? "bg-accent" : "";
 });
 
-const onClick = () => {
+const selectPath = () => {
   emits("select", props.pathTree.path);
 };
-const onDoubleClick = () => {
+const toggleChildren = () => {
   showChildren.value = !showChildren.value;
 };
 </script>
@@ -29,8 +29,8 @@ const onDoubleClick = () => {
 <template>
   <li>
     <button
-      @click="onClick"
-      @dblclick="onDoubleClick"
+      @click="selectPath"
+      @dblclick="toggleChildren"
       class="btn btn-ghost text-md cursor-pointe w-full justify-start rounded-selector"
       :class="colorClass"
     >
@@ -39,6 +39,8 @@ const onDoubleClick = () => {
         <MaterialIcon
           v-if="pathTree.type === 'dir'"
           :name="showChildren ? 'keyboard_arrow_down' : 'keyboard_arrow_right'"
+          class="hover:bg-blue-50/50 rounded-selector"
+          @click.stop="toggleChildren"
         />
         {{ pathTree.name }}
       </span>
