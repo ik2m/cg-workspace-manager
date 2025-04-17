@@ -19,8 +19,10 @@ const colorClass = computed(() => {
 });
 
 const onClick = () => {
-  showChildren.value = !showChildren.value;
   emits("select", props.pathTree.path);
+};
+const onDoubleClick = () => {
+  showChildren.value = !showChildren.value;
 };
 </script>
 
@@ -28,6 +30,7 @@ const onClick = () => {
   <li>
     <button
       @click="onClick"
+      @dblclick="onDoubleClick"
       class="btn btn-ghost text-md cursor-pointe w-full justify-start rounded-selector"
       :class="colorClass"
     >
