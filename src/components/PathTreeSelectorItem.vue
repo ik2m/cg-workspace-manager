@@ -39,8 +39,8 @@ const toggleChildren = () => {
         <MaterialIcon
           v-if="pathTree.type === 'dir'"
           name="keyboard_arrow_down"
-          class="hover:bg-blue-50/50 rounded-selector transition-all duration-200"
-          :class="{ '-rotate-90': showChildren }"
+          class="hover:bg-blue-50/50 rounded-selector transition-all duration-200 -rotate-90"
+          :class="{ 'rotate-0': showChildren }"
           @click.stop="toggleChildren"
         />
         <span v-else class="w-[24px]"></span>
