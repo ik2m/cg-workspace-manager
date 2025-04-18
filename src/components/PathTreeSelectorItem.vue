@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { Dir, File } from "../types";
 import PathTreeItem from "./PathTreeSelectorItem.vue";
-import MaterialIcon from "./MaterialIcon.vue";
+import MaterialIcon from "./common/MaterialIcon.vue";
 
 const props = defineProps<{
   pathTree: Dir | File;
@@ -35,13 +35,15 @@ const toggleChildren = () => {
       :class="colorClass"
     >
       <span class="inline-flex items-center">
-        <span :style="{ width: `${depth * 8}px` }" />
+        <span :style="{ width: `${depth * 12}px` }" />
         <MaterialIcon
           v-if="pathTree.type === 'dir'"
-          :name="showChildren ? 'keyboard_arrow_down' : 'keyboard_arrow_right'"
-          class="hover:bg-blue-50/50 rounded-selector"
+          name="keyboard_arrow_down"
+          class="hover:bg-blue-50/50 rounded-selector transition-all duration-200"
+          :class="{ '-rotate-90': showChildren }"
           @click.stop="toggleChildren"
         />
+        <span v-else class="w-[24px]"></span>
         {{ pathTree.name }}
       </span>
     </button>
