@@ -40,6 +40,8 @@ function getFiles() {
     });
 }
 
+const selectedPath = ref<string | null>(null);
+
 watch(
   () => workspaceDir.value,
   (newVal) => {
@@ -63,8 +65,13 @@ onMounted(() => {
       <p>選択したフォルダ: {{ editingWorkspaceDir }}</p>
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
-      <PathTreeSelector v-if="pathTree" :path-tree="pathTree" />
+      <PathTreeSelector
+        v-if="pathTree"
+        :path-tree="pathTree"
+        v-model="selectedPath"
+      />
     </div>
+    <SelectedFileInfo v-if="selectedPath" :path="selectedPath" />
   </main>
 </template>
 <style scoped></style>
