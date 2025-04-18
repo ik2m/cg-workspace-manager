@@ -1,37 +1,28 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
 import type { PathTree } from "./types";
 import { useAppSetting } from "./composables/useAppSetting.ts";
 import SelectedFileInfo from "./components/SelectedFileInfo.vue";
 import PathTreeSelector from "./components/PathTreeSelector.vue";
+import MaterialIcon from "./components/common/MaterialIcon.vue";
+import SelectBox from "./components/SelectBox.vue";
+import Setting from "./Setting.vue";
 
 const pathTree = ref<PathTree | null>(null);
-const editingWorkspaceDir = ref<string | null>(null);
 const errMsg = ref<string>("");
 
-const { workspaceDir, updateWorkSpaceDir } = useAppSetting();
+const { currentWorkspaceDir, workspaceDirs, updateCurrentWorkSpaceDir } =
+  useAppSetting();
 
-async function openFolderDialog() {
-  const selected = await open({
-    directory: true,
-    multiple: false,
-    title: "フォルダを選択してください",
-  });
-
-  if (selected) {
-    editingWorkspaceDir.value = selected;
-  }
-}
-
-function storeWorkspaceDir() {
-  updateWorkSpaceDir(editingWorkspaceDir.value ?? "");
+function storeCurrentWorkspaceDir(v: string | null) {
+  selectedPath.value = null;
+  updateCurrentWorkSpaceDir(v);
 }
 
 function getFiles() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  invoke<PathTree>("list_files_in_dir", { dir: workspaceDir.value })
+  invoke<PathTree>("list_files_in_dir", { dir: currentWorkspaceDir.value })
     .then((res) => {
       pathTree.value = res;
     })
@@ -43,7 +34,7 @@ function getFiles() {
 const selectedPath = ref<string | null>(null);
 
 watch(
-  () => workspaceDir.value,
+  () => currentWorkspaceDir.value,
   (newVal) => {
     if (newVal) {
       getFiles();
@@ -52,17 +43,24 @@ watch(
   { immediate: true },
 );
 
-onMounted(() => {
-  editingWorkspaceDir.value = workspaceDir.value;
-});
+const showSettings = ref(false);
 </script>
 
 <template>
   <main class="flex flex-col h-screen">
     <div>
-      <button @click="openFolderDialog" class="btn">フォルダを選択</button>
-      <button @click="storeWorkspaceDir" class="btn">決定</button>
-      <p>選択したフォルダ: {{ editingWorkspaceDir }}</p>
+      <SelectBox
+        :options="workspaceDirs"
+        :model-value="currentWorkspaceDir"
+        @update:model-value="storeCurrentWorkspaceDir"
+      />
+      <button
+        class="btn btn-ghost text-md cursor-pointer"
+        @click="showSettings = !showSettings"
+      >
+        <MaterialIcon name="settings" />
+      </button>
+      <Setting v-if="showSettings" />
     </div>
     <div class="bg-base-200 flex-grow-1 overflow-auto">
       <PathTreeSelector
