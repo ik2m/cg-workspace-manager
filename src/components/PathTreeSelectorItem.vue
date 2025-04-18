@@ -15,7 +15,9 @@ const emits = defineEmits(["select"]);
 const showChildren = ref<boolean>(false);
 
 const colorClass = computed(() => {
-  return props.selectedPath === props.pathTree.path ? "bg-accent" : "";
+  return props.selectedPath === props.pathTree.path
+    ? "bg-primary text-primary-content"
+    : "";
 });
 
 const selectPath = () => {
